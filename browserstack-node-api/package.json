@@ -1,0 +1,16 @@
+{
+  "name": "browserstack-api",
+  "version": "0.1.0",
+  "description": "Node client to run selenium tests on BrowserStack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Not Implemented yet\" && exit 1"
+  },
+  "keywords": [
+    "BrowserStack",
+    "selenium",
+    "testing"
+  ],
+  "author": "BrowserStack",
+  "license": "ISC"
+}
