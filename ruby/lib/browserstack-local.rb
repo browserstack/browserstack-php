@@ -40,6 +40,10 @@ class BrowserStackLocal
     @proxy = "-proxyHost '#{host}' -proxyPort #{port} -proxyUser '#{username}' -proxyPass '#{password}'"
   end
 
+  def set_hosts(hosts)
+    @hosts = hosts
+  end
+
   def start
     @process = IO.popen(command, "w+")
 
@@ -72,7 +76,7 @@ class BrowserStackLocal
   end
 
   def command
-    "BrowserStackLocal #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy} #{@force_flag} #{@verbose_flag}".strip
+    "BrowserStackLocal #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy} #{@force_flag} #{@verbose_flag} #{@hosts}".strip
   end
 end
 
