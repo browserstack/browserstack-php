@@ -20,13 +20,13 @@ class BrowserStackLocalTest < Minitest::Test
     end
   end
 
-  def test_verbose
-    @bs_local.verbose
+  def test_enable_verbose
+    @bs_local.enable_verbose
     assert_match /\-v/, @bs_local.command
   end
 
-  def test_enable_folder
-    @bs_local.enable_folder "/"
+  def test_set_folder
+    @bs_local.set_folder "/"
     assert_match /\-f/, @bs_local.command
     assert_match /\'\/\'/, @bs_local.command
   end
@@ -54,6 +54,11 @@ class BrowserStackLocalTest < Minitest::Test
   def test_set_local_identifier
     @bs_local.set_local_identifier "randomString"
     assert_match /\-localIdentifier \'randomString\'/, @bs_local.command
+  end
+
+  def test_set_proxy
+    @bs_local.set_proxy "localhost", 8080, "user", "pass"
+    assert_match /\-proxyHost \'localhost\' \-proxyPort 8080 \-proxyUser \'user\' \-proxyPass \'pass\'/, @bs_local.command
   end
 
   def teardown

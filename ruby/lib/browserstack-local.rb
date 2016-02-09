@@ -1,3 +1,5 @@
+require 'net/http'
+
 class BrowserStackLocal
   attr_reader :pid
 
@@ -5,11 +7,11 @@ class BrowserStackLocal
     @key = key
   end
 
-  def verbose
+  def enable_verbose
     @verbose_flag = "-v"
   end
 
-  def enable_folder(path)
+  def set_folder(path)
     @folder_flag = "-f"
     @folder_path = "'#{path}'"
   end
@@ -34,6 +36,10 @@ class BrowserStackLocal
     @local_identifier_flag = "-localIdentifier '#{local_identifier}'"
   end
 
+  def set_proxy(host, port, username, password)
+    @proxy = "-proxyHost '#{host}' -proxyPort #{port} -proxyUser '#{username}' -proxyPass '#{password}'"
+  end
+
   def start
     @process = IO.popen(command, "w+")
 
@@ -50,6 +56,13 @@ class BrowserStackLocal
         return
       end
     end
+
+    while true
+      resp = Net::HTTP.get(URI.parse("http://localhost:45691/check")) rescue nil
+      puts resp
+      break if resp && resp.match(/running/i)
+      sleep 1
+    end
   end
 
   def stop
@@ -59,7 +72,7 @@ class BrowserStackLocal
   end
 
   def command
-    "BrowserStackLocal #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@force_flag} #{@verbose_flag}".strip
+    "BrowserStackLocal #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy} #{@force_flag} #{@verbose_flag}".strip
   end
 end
 
