@@ -15,6 +15,7 @@
   "author": "BrowserStack",
   "license": "MIT",
   "dependencies": {
+    "npmlog": "2.0.2",
     "unzip": "0.1.11"
   },
   "devDependencies": {

@@ -3,7 +3,8 @@ var util = require('util'),
   EventEmitter = require('events').EventEmitter,
   spawn = require('child_process').spawn,
   os = require('os'),
-  ZipBinary = require('./ZipBinary');
+  ZipBinary = require('./ZipBinary'),
+  log = require('./helper').log;
 
 function BrowserStackTunnel(options) {
   'use strict';
@@ -89,7 +90,7 @@ function BrowserStackTunnel(options) {
   };
 
   this.on('newer_available', function () {
-    console.log('BrowserStackTunnel: binary out of date');
+    log.warn('BrowserStackTunnel: binary out of date');
     this.killTunnel();
     var self = this;
     binary.update(function () {
@@ -147,7 +148,7 @@ function BrowserStackTunnel(options) {
 
   this._startTunnel = function () {
     this.cleanUp();
-    console.log('Local started with args: ' + binary.args.concat([options.key]).concat(params));
+    log.info('Local started with args: ' + binary.args.concat([options.key]).concat(params));
     this.tunnel = spawn(binary.command, binary.args.concat([options.key]).concat(params));
     this.tunnel.stdout.on('data', this.updateState.bind(this));
     this.tunnel.stderr.on('data', this.updateState.bind(this));
@@ -159,7 +160,7 @@ function BrowserStackTunnel(options) {
 
   this.startTunnel = function () {
     if (!fs.existsSync(binary.path)) {
-      console.log('BrowserStackTunnel: binary not present');
+      log.warn('BrowserStackTunnel: binary not present');
       var self = this;
       binary.update(function () {
         self._startTunnel();
