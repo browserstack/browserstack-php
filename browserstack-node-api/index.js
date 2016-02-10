@@ -1,4 +1,5 @@
-var browserStackTunnel = require('./lib/browserStackTunnel');
+var browserStackTunnel = require('./lib/browserStackTunnel'),
+  helper = require('./lib/helper');
 
 function BrowserStackApi() {
   var tunnel = null,
@@ -7,10 +8,40 @@ function BrowserStackApi() {
     };
 
   this.addArgs = function(argument, value) {
-    if(argument === 'localIdentifier') {
+    switch(argument) {
+    case 'localIdentifier':
       options.localIdentifier = value;
-    } else if(argument === 'key') {
+      break;
+    case 'key':
       options.key = value;
+      break;
+    case 'verbose':
+      options.v = true;
+      helper.log.level = value;
+      break;
+    case 'forcelocal':
+      options.forcelocal = value;
+      break;
+    case 'hosts':
+      options.hosts = value;
+      break;
+    case 'proxyHost':
+      options.proxyHost = value;
+      break;
+    case 'proxyPort':
+      options.proxyPort = value;
+      break;
+    case 'proxyUser':
+      options.proxyUser = value;
+      break;
+    case 'proxyPass':
+      options.proxyPass = value;
+      break;
+    case 'onlyAutomate':
+      options.onlyAutomate = value;
+      break;
+    default:
+      break;
     }
   };
 

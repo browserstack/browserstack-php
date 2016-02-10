@@ -1,7 +1,7 @@
 var util = require('util'),
   fs = require('fs'),
   EventEmitter = require('events').EventEmitter,
-  spawn = require('child_process').spawn,
+  childProcess = require('child_process'),
   os = require('os'),
   ZipBinary = require('./ZipBinary'),
   log = require('./helper').log;
@@ -34,14 +34,7 @@ function BrowserStackTunnel(options) {
   this.tunnel = null;
 
   if (options.hosts) {
-    var hosts = '';
-    options.hosts.forEach(function (host) {
-      if (hosts.length > 0) {
-        hosts += ',';
-      }
-      hosts += host.name + ',' + host.port + ',' + host.sslFlag;
-    });
-    params.push(hosts);
+    params.push(options.hosts);
   }
 
   if (options.localIdentifier) {
@@ -49,6 +42,7 @@ function BrowserStackTunnel(options) {
   }
 
   if (options.v) {
+    log.level = 'silly';
     params.push('-v');
   }
 
@@ -149,7 +143,7 @@ function BrowserStackTunnel(options) {
   this._startTunnel = function () {
     this.cleanUp();
     log.info('Local started with args: ' + binary.args.concat([options.key]).concat(params));
-    this.tunnel = spawn(binary.command, binary.args.concat([options.key]).concat(params));
+    this.tunnel = childProcess.spawn(binary.command, binary.args.concat([options.key]).concat(params));
     this.tunnel.stdout.on('data', this.updateState.bind(this));
     this.tunnel.stderr.on('data', this.updateState.bind(this));
     this.tunnel.on('error', this.killTunnel.bind(this));
