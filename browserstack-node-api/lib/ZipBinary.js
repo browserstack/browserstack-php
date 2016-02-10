@@ -1,7 +1,8 @@
 var path = require('path'),
   https = require('https'),
   unzip = require('unzip'),
-  fs = require('fs');
+  fs = require('fs'),
+  log = require('./helper').log;
 
 function ZipBinary(platform, arch, bin, ext) {
   'use strict';
@@ -17,10 +18,9 @@ function ZipBinary(platform, arch, bin, ext) {
       path: self.bin
     });
     https.get('https://www.browserstack.com/browserstack-local/BrowserStackLocal-' + platform + (arch ? '-' + arch : '') + '.zip', function (response) {
-      console.log('BrowserStackTunnel: download binary for ' + platform + (arch ? '-' + arch : '') + ' ...');
+      log.info('Downloading binary for ' + platform + (arch ? '-' + arch : '') + ' ...');
       extractStream.on('close', function () {
-        console.log('BrowserStackTunnel: download complete');
-        console.log('BrowserStackTunnel: chmod 0755 binary');
+        log.info('Download complete');
         fs.chmod(self.path, '0755', callback);
       });
       response.pipe(extractStream);
