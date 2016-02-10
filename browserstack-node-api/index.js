@@ -1,19 +1,32 @@
-var browserStackTunnelWrapper = require('./lib/browserStackTunnelWrapper.js');
+var browserStackTunnel = require('./lib/browserStackTunnel');
 
 function BrowserStackApi() {
-  var wrapper = new browserStackTunnelWrapper();
+  var tunnel = null,
+    options = {
+      key: process.env.BROWSERSTACK_ACCESS_KEY
+    };
 
   this.addArgs = function(argument, value) {
-    wrapper.addArgs(argument, value);
+    if(argument === 'localIdentifier') {
+      options.localIdentifier = value;
+    } else if(argument === 'key') {
+      options.key = value;
+    }
   };
 
   this.start = function(callback) {
-    wrapper.start(callback);
+    tunnel = new browserStackTunnel(options);
+    if(callback == null) {
+      callback = function() {};
+    }
+    tunnel.start(callback);
   };
 
   this.stop = function(callback) {
-    wrapper.stop(callback);
+    if(tunnel) {
+      tunnel.stop(callback);
+    }
   };
-};
+}
 
 module.exports = BrowserStackApi;

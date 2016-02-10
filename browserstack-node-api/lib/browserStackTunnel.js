@@ -1,9 +1,9 @@
 var util = require('util'),
-    fs = require('fs'),
-    EventEmitter = require('events').EventEmitter,
-    spawn = require('child_process').spawn,
-    os = require('os'),
-    ZipBinary = require('./ZipBinary');
+  fs = require('fs'),
+  EventEmitter = require('events').EventEmitter,
+  spawn = require('child_process').spawn,
+  os = require('os'),
+  ZipBinary = require('./ZipBinary');
 
 function BrowserStackTunnel(options) {
   'use strict';
@@ -147,6 +147,7 @@ function BrowserStackTunnel(options) {
 
   this._startTunnel = function () {
     this.cleanUp();
+    console.log('Local started with args: ' + binary.args.concat([options.key]).concat(params));
     this.tunnel = spawn(binary.command, binary.args.concat([options.key]).concat(params));
     this.tunnel.stdout.on('data', this.updateState.bind(this));
     this.tunnel.stderr.on('data', this.updateState.bind(this));

@@ -4,7 +4,8 @@
   "description": "Node client to run selenium tests on BrowserStack",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Not Implemented yet\" && exit 1"
+    "pretest": "./node_modules/.bin/eslint lib/* index.js",
+    "test": "NODE_ENV=testing ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha"
   },
   "keywords": [
     "BrowserStack",
@@ -15,5 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "unzip": "0.1.11"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "eslint": "1.10.3",
+    "istanbul": "0.4.2",
+    "mocha": "2.4.5",
+    "sinon": "1.17.3"
   }
 }

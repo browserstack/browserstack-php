@@ -1,7 +1,7 @@
 var path = require('path'),
-    https = require('https'),
-    unzip = require('unzip'),
-    fs = require('fs');
+  https = require('https'),
+  unzip = require('unzip'),
+  fs = require('fs');
 
 function ZipBinary(platform, arch, bin, ext) {
   'use strict';
