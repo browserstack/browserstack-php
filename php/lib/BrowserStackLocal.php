@@ -4,52 +4,48 @@ namespace BrowserStack;
 
 use Exception;
 
-error_reporting(0);
 
 class BrowserStackLocal {
 
-	public $key; 
-	public $binaryPath; 
-  
 	public function __construct($key) {
-    	$key = $key;
-      echo $key;
-	}
+    	$this->key = $key;
+      
+  }
 
 	public function __destruct() {
         echo "";
   }
 
- 	public static function verbose() {
-    	$verbose_flag = "-v";
+ 	public  function verbose() {
+    	$this->verbose_flag = "-v";
   }
 
-	public static function enable_folder($path) {
-  	$folder_flag = "-f";
-  	$folder_path = "$path";
+	public  function enable_folder($path) {
+  	$this->folder_flag = "-f";
+  	$this->folder_path = "$path";
 	}
 
-  public static function enable_force() {
-    $force_flag = "-force";
+  public  function enable_force() {
+    $this->force_flag = "-force";
   }
 
-  public static function enable_only() {
-    $only_flag = "-only";
+  public  function enable_only() {
+    $this->only_flag = "-only";
   }
 
-  public static function enable_only_automate() {
-    $only_automate_flag = "-onlyAutomate";
+  public  function enable_only_automate() {
+    $this->only_automate_flag = "-onlyAutomate";
   }
 
-  public static function enable_force_local() {
-    $force_local_flag = "-forcelocal";
+  public  function enable_force_local() {
+    $this->force_local_flag = "-forcelocal";
   }
 
-  public static function set_local_identifier($localIdentifier) {
-    $local_identifier_flag = "-localIdentifier {$localIdentifier}";
+  public  function set_local_identifier($localIdentifier) {
+    $this->local_identifier_flag = "-localIdentifier {$localIdentifier}";
   }
 
-  // public static function start() {
+  // public  function start() {
   //   $process = IO.popen(command, "w+")
 
   //   while true
@@ -67,13 +63,13 @@ class BrowserStackLocal {
   //   }
   // }
 
-  // public static function stop() {
+  // public  function stop() {
   //   return if $pid.nil?
   //   Process.kill("INT", $pid)
   //   $process.close
   // }
 
-  public static function command() {
-   echo "BrowserStackLocal {$folder_flag} {$key} {$folder_path} {$force_local_flag} {$local_identifier_flag} {$only_flag} {$only_automate_flag} {$force_flag} {$verbose_flag}";#.strip
+  public function command() {
+    return "BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
   }
 }

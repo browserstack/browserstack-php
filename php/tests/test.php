@@ -7,4 +7,4 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $me = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));
 
-echo BrowserStackLocal::command();
+$me->command();
