@@ -4,12 +4,18 @@ namespace BrowserStack;
 
 use Exception;
 
-
 class BrowserStackLocal {
 
 	public function __construct($key) {
-    	$this->key = $key;
-      
+    $this->key = $key;
+    $this->verbose_flag = "";
+    $this->folder_flag = "";
+    $this->folder_path = "";
+    $this->force_flag = "";
+    $this->only_flag = "";
+    $this->only_automate_flag = "";
+    $this->force_local_flag = "";
+    $this->local_identifier_flag = "";
   }
 
 	public function __destruct() {
@@ -22,7 +28,7 @@ class BrowserStackLocal {
 
 	public  function enable_folder($path) {
   	$this->folder_flag = "-f";
-  	$this->folder_path = "$path";
+  	$this->folder_path = $path;
 	}
 
   public  function enable_force() {
@@ -42,10 +48,10 @@ class BrowserStackLocal {
   }
 
   public  function set_local_identifier($localIdentifier) {
-    $this->local_identifier_flag = "-localIdentifier {$localIdentifier}";
+    $this->local_identifier_flag = "-localIdentifier $localIdentifier";
   }
 
-  // public  function start() {
+  public  function start() {
   //   $process = IO.popen(command, "w+")
 
   //   while true
@@ -61,13 +67,13 @@ class BrowserStackLocal {
   //       return
   //     }
   //   }
-  // }
+  }
 
-  // public  function stop() {
+  public  function stop() {
   //   return if $pid.nil?
   //   Process.kill("INT", $pid)
   //   $process.close
-  // }
+  }
 
   public function command() {
     return "BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
