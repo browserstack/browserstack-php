@@ -1,59 +1,59 @@
+var expect = require('expect.js'),
+    mocks = require('mocks'),
+    childProcessMock = require('./lib/mocks').childProcessMock,
+    httpMock = require('./lib/mocks').httpMock,
+    fsMock = require('./lib/mocks').fsMock,
+    unzipMock = require('./lib/mocks').unzipMock,
+    osMock = require('./lib/mocks').osMock,
+    sinon = require('sinon');
+
+var spawnSpy = sinon.spy(childProcessMock.spawn);
+childProcessMock.spawn = spawnSpy;
+
+var zb = mocks.loadFile('./lib/ZipBinary.js', {
+  https: httpMock,
+  fs: fsMock,
+  unzip: unzipMock
+});
+var ZipBinary = zb.ZipBinary;
+
+var bs = mocks.loadFile('./lib/browserStackTunnel.js', {
+  child_process: childProcessMock,
+  http: httpMock,
+  fs: fsMock,
+  os: osMock,
+  './ZipBinary': ZipBinary
+});
+
+var NEW_BINARY_DIR = '/bin/new',
+    NEW_BINARY_FILE = NEW_BINARY_DIR + '/BrowserStackLocal',
+    NEW_WIN32_BINARY_FILE = NEW_BINARY_DIR + '/BrowserStackLocal.exe',
+    OSX_BINARY_DIR = '/bin/darwin',
+    OSX_BINARY_FILE = OSX_BINARY_DIR + '/BrowserStackLocal',
+    LINUX_64_BINARY_DIR = '/bin/linux64',
+    LINUX_64_BINARY_FILE = LINUX_64_BINARY_DIR + '/BrowserStackLocal',
+    LINUX_32_BINARY_DIR = '/bin/linux32',
+    LINUX_32_BINARY_FILE = LINUX_32_BINARY_DIR + '/BrowserStackLocal',
+    WIN32_BINARY_DIR = '/bin/win32',
+    WIN32_BINARY_FILE = WIN32_BINARY_DIR + '/BrowserStackLocal.exe',
+    OSX_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-darwin-x64.zip',
+    LINUX_64_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip',
+    LINUX_32_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-ia32.zip',
+    WIN32_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-win32.zip',
+    HOST_NAME = 'localhost',
+    PORT = 8080,
+    INVALID_PORT = 8081,
+    SSL_FLAG = 0,
+    KEY = 'This is a fake key',
+    HOST_NAME2 = 'localhost2',
+    PORT2 = 8081,
+    SSL_FLAG2 = 1,
+    PROXY_HOST = 'fakehost.com',
+    PROXY_USER = 'proxyuser',
+    PROXY_PASS = 'proxypass',
+    PROXY_PORT = '1234';
+
 describe('BrowserStackTunnel', function () {
-  var expect = require('expect.js'),
-      mocks = require('mocks'),
-      childProcessMock = require('./lib/mocks').childProcessMock,
-      httpMock = require('./lib/mocks').httpMock,
-      fsMock = require('./lib/mocks').fsMock,
-      unzipMock = require('./lib/mocks').unzipMock,
-      osMock = require('./lib/mocks').osMock,
-      sinon = require('sinon');
-
-  var spawnSpy = sinon.spy(childProcessMock.spawn);
-  childProcessMock.spawn = spawnSpy;
-
-  var zb = mocks.loadFile('./lib/ZipBinary.js', {
-    https: httpMock,
-    fs: fsMock,
-    unzip: unzipMock
-  });
-  var ZipBinary = zb.ZipBinary;
-
-  var bs = mocks.loadFile('./lib/browserStackTunnel.js', {
-    child_process: childProcessMock,
-    http: httpMock,
-    fs: fsMock,
-    os: osMock,
-    './ZipBinary': ZipBinary
-  });
-
-  var NEW_BINARY_DIR = '/bin/new',
-      NEW_BINARY_FILE = NEW_BINARY_DIR + '/BrowserStackLocal',
-      NEW_WIN32_BINARY_FILE = NEW_BINARY_DIR + '/BrowserStackLocal.exe',
-      OSX_BINARY_DIR = '/bin/darwin',
-      OSX_BINARY_FILE = OSX_BINARY_DIR + '/BrowserStackLocal',
-      LINUX_64_BINARY_DIR = '/bin/linux64',
-      LINUX_64_BINARY_FILE = LINUX_64_BINARY_DIR + '/BrowserStackLocal',
-      LINUX_32_BINARY_DIR = '/bin/linux32',
-      LINUX_32_BINARY_FILE = LINUX_32_BINARY_DIR + '/BrowserStackLocal',
-      WIN32_BINARY_DIR = '/bin/win32',
-      WIN32_BINARY_FILE = WIN32_BINARY_DIR + '/BrowserStackLocal.exe',
-      OSX_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-darwin-x64.zip',
-      LINUX_64_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip',
-      LINUX_32_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-ia32.zip',
-      WIN32_BINARY_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-win32.zip',
-      HOST_NAME = 'localhost',
-      PORT = 8080,
-      INVALID_PORT = 8081,
-      SSL_FLAG = 0,
-      KEY = 'This is a fake key',
-      HOST_NAME2 = 'localhost2',
-      PORT2 = 8081,
-      SSL_FLAG2 = 1,
-      PROXY_HOST = 'fakehost.com',
-      PROXY_USER = 'proxyuser',
-      PROXY_PASS = 'proxypass',
-      PROXY_PORT = '1234';
-
   beforeEach(function () {
     fsMock.fileNameModded = undefined;
     fsMock.mode = undefined;
