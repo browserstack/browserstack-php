@@ -1,87 +1,3 @@
-var browserStackTunnel = require('../lib/browserStackTunnel'),
-  ZipBinary = require('../lib/ZipBinary'),
-  sinon = require('sinon'),
-  chai = require('chai').should(),
-  os = require('os'),
-  fs = require('fs'),
-  path = require('path'),
-  childProcess = require('child_process');
-
-describe('BrowserStackTunnel Module', function() {
-  describe('OS platforms', function () {
-    var sandBox = null,
-      fsStub = null,
-      platformStub = null,
-      archStub = null;
-
-    beforeEach(function() {
-      sandBox = sinon.sandbox.create();
-
-      fsStub = sandBox.stub(fs, 'existsSync').returns(true);
-      platformStub = sandBox.stub(os, 'platform');
-      archStub = sandBox.stub(os, 'arch');
-
-      sandBox.stub(childProcess, 'spawn').returns({
-        stdout: {
-          on: sandBox.stub()
-        },
-        stderr: {
-          on: sandBox.stub()
-        },
-        on: sandBox.stub()
-      });
-    });
-
-    it('Selects Correct ZipBinary for linux x64', function() {
-      platformStub.returns('linux');
-      archStub.returns('x64');
-      fsStub.returns(true);
-      var tunnel = new browserStackTunnel({});
-      tunnel.startTunnel();
-
-      fs.existsSync.called.should.be.true;
-      fs.existsSync.calledWith(path.join(__dirname, '../', 'bin/linux/x64/BrowserStackLocal')).should.be.true;
-    });
-
-    it('Selects Correct ZipBinary for linux ia32', function() {
-      platformStub.returns('linux');
-      archStub.returns('ia32');
-      fsStub.returns(true);
-      var tunnel = new browserStackTunnel({});
-      tunnel.startTunnel();
-
-      fs.existsSync.called.should.be.true;
-      fs.existsSync.calledWith(path.join(__dirname, '../', 'bin/linux/ia32/BrowserStackLocal')).should.be.true;
-    });
-
-    it('Selects Correct ZipBinary for darwin', function() {
-      platformStub.returns('darwin');
-      archStub.returns('ia32');
-      fsStub.returns(true);
-      var tunnel = new browserStackTunnel({});
-      tunnel.startTunnel();
-
-      fs.existsSync.called.should.be.true;
-      fs.existsSync.calledWith(path.join(__dirname, '../', 'bin/darwin/x64/BrowserStackLocal')).should.be.true;
-    });
-
-    it('Selects Correct ZipBinary for windows', function() {
-      platformStub.returns('windows');
-      archStub.returns('x32');
-      fsStub.returns(true);
-      var tunnel = new browserStackTunnel({});
-      tunnel.startTunnel();
-
-      fs.existsSync.called.should.be.true;
-      fs.existsSync.calledWith(path.join(__dirname, '../', 'bin/win32/BrowserStackLocal.exe')).should.be.true;
-    });
-
-    afterEach(function() {
-      sandBox.restore();
-    });
-  });
-});
-
 describe('BrowserStackTunnel', function () {
   var expect = require('expect.js'),
       mocks = require('mocks'),
@@ -152,11 +68,6 @@ describe('BrowserStackTunnel', function () {
   it('should error if stopped before started', function (done) {
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.stop(function (error) {
@@ -168,11 +79,6 @@ describe('BrowserStackTunnel', function () {
   it('should error if no server listening on the specified host and port', function (done) {
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: INVALID_PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.start(function (error) {
@@ -188,11 +94,6 @@ describe('BrowserStackTunnel', function () {
   it('should error if user provided an invalid key', function (done) {
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: 'MONKEY_KEY',
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.start(function (error) {
@@ -208,11 +109,6 @@ describe('BrowserStackTunnel', function () {
   it('should error if started when already running', function (done) {
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
 
@@ -234,21 +130,11 @@ describe('BrowserStackTunnel', function () {
   it('should error if started when another instance is already running', function (done) {
     var browserStackTunnel1 = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
 
     var browserStackTunnel2 = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
 
@@ -274,11 +160,6 @@ describe('BrowserStackTunnel', function () {
   it('should download new binary if prompted that a new version exists as auto download is not compatible with our use of spawn', function (done) {
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: 'MONKEY_KEY',
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.start(function (error) {
@@ -300,19 +181,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support multiple hosts', function (done) {
+  it('should support multiple hosts', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }, {
-        name: HOST_NAME2,
-        port: PORT2,
-        sslFlag: SSL_FLAG2
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG + ',' + HOST_NAME2 + ',' + PORT2 + ',' + SSL_FLAG2,
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.start(function (error) {
@@ -362,16 +235,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should use the specified binary directory', function (done) {
+  it('should use the specified binary directory', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG,
-        localIdentifier: 'my_tunnel'
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       win32Bin: WIN32_BINARY_DIR
     });
     browserStackTunnel.start(function (error) {
@@ -395,15 +263,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the localIdentifier option', function (done) {
+  it('should support the localIdentifier option', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       localIdentifier: 'my_tunnel',
       win32Bin: WIN32_BINARY_DIR
     });
@@ -430,15 +294,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the v (verbose) option', function (done) {
+  it('should support the v (verbose) option', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       v: true,
       win32Bin: WIN32_BINARY_DIR
     });
@@ -464,15 +324,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the force option', function (done) {
+  it('should support the force option', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       force: true,
       win32Bin: WIN32_BINARY_DIR
     });
@@ -498,15 +354,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the forcelocal option', function (done) {
+  it('should support the forcelocal option', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       forcelocal: true,
       win32Bin: WIN32_BINARY_DIR
     });
@@ -532,15 +384,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the onlyAutomate option', function (done) {
+  it('should support the onlyAutomate option', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       onlyAutomate: true,
       win32Bin: WIN32_BINARY_DIR
     });
@@ -566,15 +414,11 @@ describe('BrowserStackTunnel', function () {
     }, 100);
   });
 
-  xit('should support the proxy options', function (done) {
+  it('should support the proxy options', function (done) {
     spawnSpy.reset();
     var browserStackTunnel = new bs.BrowserStackTunnel({
       key: KEY,
-      hosts: [{
-        name: HOST_NAME,
-        port: PORT,
-        sslFlag: SSL_FLAG
-      }],
+      hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
       proxyUser: PROXY_USER,
       proxyPass: PROXY_PASS,
       proxyPort: PROXY_PORT,
@@ -619,11 +463,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if binary is not present', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         win32Bin: NEW_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -645,11 +484,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if prompted that a new version exists as auto download is not compatible with our use of spawn', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         win32Bin: WIN32_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -671,16 +505,11 @@ describe('BrowserStackTunnel', function () {
       }, 100);
     });
 
-    xit('should use the specified binary directory', function (done) {
+    it('should use the specified binary directory', function (done) {
       spawnSpy.reset();
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: KEY,
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG,
-          localIdentifier: 'my_tunnel'
-        }],
+        hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
         win32Bin: WIN32_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -714,11 +543,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if binary is not present', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         osxBin: NEW_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -740,11 +564,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if prompted that a new version exists as auto download is not compatible with our use of spawn', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         osxBin: OSX_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -766,16 +585,11 @@ describe('BrowserStackTunnel', function () {
       }, 100);
     });
 
-    xit('should use the specified bin directory', function (done) {
+    it('should use the specified bin directory', function (done) {
       spawnSpy.reset();
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: KEY,
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG,
-          localIdentifier: 'my_tunnel'
-        }],
+        hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
         osxBin: OSX_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -809,11 +623,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if binary is not present', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         linux64Bin: NEW_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -835,11 +644,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if prompted that a new version exists as auto download is not compatible with our use of spawn', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         linux64Bin: LINUX_64_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -861,16 +665,11 @@ describe('BrowserStackTunnel', function () {
       }, 100);
     });
 
-    xit('should use the specified bin directory', function (done) {
+    it('should use the specified bin directory', function (done) {
       spawnSpy.reset();
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: KEY,
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG,
-          localIdentifier: 'my_tunnel'
-        }],
+        hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
         linux64Bin: LINUX_64_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -904,11 +703,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if binary is not present', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         linux32Bin: NEW_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -930,11 +724,6 @@ describe('BrowserStackTunnel', function () {
     it('should download new binary if prompted that a new version exists as auto download is not compatible with our use of spawn', function (done) {
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: 'MONKEY_KEY',
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG
-        }],
         linux32Bin: LINUX_32_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {
@@ -956,16 +745,11 @@ describe('BrowserStackTunnel', function () {
       }, 100);
     });
 
-    xit('should use the specified bin directory', function (done) {
+    it('should use the specified bin directory', function (done) {
       spawnSpy.reset();
       var browserStackTunnel = new bs.BrowserStackTunnel({
         key: KEY,
-        hosts: [{
-          name: HOST_NAME,
-          port: PORT,
-          sslFlag: SSL_FLAG,
-          localIdentifier: 'my_tunnel'
-        }],
+        hosts: HOST_NAME + ',' + PORT + ',' + SSL_FLAG,
         linux32Bin: LINUX_32_BINARY_DIR
       });
       browserStackTunnel.start(function (error) {

@@ -42,7 +42,6 @@ function BrowserStackTunnel(options) {
   }
 
   if (options.v) {
-    log.level = 'silly';
     params.push('-v');
   }
 
@@ -137,7 +136,6 @@ function BrowserStackTunnel(options) {
 
   this.cleanUp = function () {
     this.stdoutData = '';
-    process.removeListener('uncaughtException', this.exit.bind(this));
   };
 
   this._startTunnel = function () {
@@ -148,8 +146,6 @@ function BrowserStackTunnel(options) {
     this.tunnel.stderr.on('data', this.updateState.bind(this));
     this.tunnel.on('error', this.killTunnel.bind(this));
     this.tunnel.on('exit', this.exit.bind(this));
-
-    process.on('uncaughtException', this.killTunnel.bind(this));
   };
 
   this.startTunnel = function () {
