@@ -1,7 +1,7 @@
 var browserStackTunnelWrapper = require('./lib/browserStackTunnelWrapper.js');
 
 function BrowserStackApi() {
-  var wrapper = browserStackTunnelWrapper();
+  var wrapper = new browserStackTunnelWrapper();
 
   this.addArgs = function(argument, value) {
     wrapper.addArgs(argument, value);
@@ -16,4 +16,4 @@ function BrowserStackApi() {
   };
 };
 
-exports = BrowserStackApi;
+module.exports = BrowserStackApi;

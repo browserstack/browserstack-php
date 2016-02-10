@@ -11,13 +11,13 @@ function BrowserStackTunnelWrapper() {
   };
 
   this.start = function(callback) {
-    tunnel = browserStackTunnel(options);
+    tunnel = new browserStackTunnel(options);
     tunnel.start(callback);
   };
 
-  this.stop = function() {
+  this.stop = function(callback) {
     tunnel.stop(callback);
   };
 }
 
-exports = BrowserStackTunnelWrapper;
+module.exports = BrowserStackTunnelWrapper;
