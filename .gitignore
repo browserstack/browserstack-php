@@ -1,1 +1,3 @@
 ruby/dist/*
+*.pyc
+python/env
