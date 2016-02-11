@@ -9,6 +9,7 @@ namespace UseBSApi {
       myInst.addArgs("qweqwe", "wer");
       myInst.addArgs("onlyAutomate", "true");
       myInst.addArgs("hosts", "localhost,3000,0");
+      myInst.start();
     }
   }
 }
