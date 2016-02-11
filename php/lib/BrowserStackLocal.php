@@ -80,12 +80,16 @@ class BrowserStackLocal {
   }
 
   public function stop() {
-    proc_terminate($this->handle);
     if (is_null($this->handle))
       return;
-    else{
+    else {
+      $process_status = proc_get_status($this->handle);
+      $pid = $process_status["pid"];
       pclose($this->handle);
+      posix_kill($pid, SIGKILL);
+      
     }
+
   }
 
   public function command() {

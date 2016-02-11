@@ -10,4 +10,4 @@ require_once('vendor/autoload.php');
 
 $me = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));
 $me->start();
-#$me->stop();
+$me->stop();
