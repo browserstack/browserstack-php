@@ -9,7 +9,5 @@ use BrowserStack\BrowserStackLocalException;
 require_once('vendor/autoload.php');
 
 $me = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));
-$me->verbose();
-$me->enable_folder();
 $me->start();
-$me->stop();
+#$me->stop();
