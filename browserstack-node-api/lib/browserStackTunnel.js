@@ -1,14 +1,23 @@
-var util = require('util'),
-  fs = require('fs'),
-  EventEmitter = require('events').EventEmitter,
+var fs = require('fs'),
   childProcess = require('child_process'),
   os = require('os'),
   ZipBinary = require('./ZipBinary'),
   log = require('./helper').log;
 
 function BrowserStackTunnel(options) {
-  'use strict';
-  var params = [];
+  var params = [],
+    startCallback = null,
+    stopCallback = null,
+    doneStart = function(params) {
+      if(startCallback !== null) {
+        startCallback(params);
+      }
+    },
+    doneStop = function(params) {
+      if(stopCallback !== null) {
+        stopCallback(params);
+      }
+    };
 
   var binary;
   switch (os.platform()) {
@@ -82,34 +91,34 @@ function BrowserStackTunnel(options) {
     'started': new RegExp('Press Ctrl-C to exit')
   };
 
-  this.on('newer_available', function () {
-    log.warn('BrowserStackTunnel: binary out of date');
-    this.killTunnel();
-    var self = this;
-    binary.update(function () {
-      self.startTunnel();
-    });
-  });
-
-  this.on('invalid_key', function () {
-    this.emit('started', new Error('Invalid key'));
-  });
-
-  this.on('connection_failure', function () {
-    this.emit('started', new Error('Could not connect to server'));
-  });
-
-  this.on('already_running', function () {
-    this.emit('started', new Error('child already started'));
-  });
-
   this.updateState = function (data) {
     var state;
     this.stdoutData += data.toString();
     for (state in this.stateMatchers) {
       if (this.stateMatchers.hasOwnProperty(state) && this.stateMatchers[state].test(this.stdoutData) && this.state !== state) {
         this.state = state;
-        this.emit(state, null);
+        switch(state) {
+        case('newer_available'):
+          log.warn('BrowserStackTunnel: binary out of date');
+          this.killTunnel();
+          var self = this;
+          binary.update(function () {
+            self.startTunnel();
+          });
+          break;
+        case('invalid_key'):
+          doneStart(new Error('Invalid key'));
+          break;
+        case('connection_failure'):
+          doneStart(new Error('Could not connect to server'));
+          break;
+        case('already_running'):
+          doneStart(new Error('child already started'));
+          break;
+        default:
+          doneStart();
+          break;
+        }
         break;
       }
     }
@@ -127,10 +136,10 @@ function BrowserStackTunnel(options) {
 
   this.exit = function () {
     if (this.state !== 'started' && this.state !== 'newer_available') {
-      this.emit('started', new Error('child failed to start:\n' + this.stdoutData));
+      doneStart(new Error('child failed to start:\n' + this.stdoutData));
     } else if (this.state !== 'newer_available') {
       this.state = 'stop';
-      this.emit('stop');
+      doneStop();
     }
   };
 
@@ -161,21 +170,19 @@ function BrowserStackTunnel(options) {
   };
 
   this.start = function (callback) {
-    this.once('started', callback);
+    startCallback = callback;
     if (this.state === 'started') {
-      this.emit('already_running');
+      doneStart(new Error('child already started'));
     } else {
       this.startTunnel();
     }
   };
 
   this.stop = function (callback) {
-    var listenerCount = (typeof this.listenerCount !== 'undefined') ? this.listenerCount('stop') : EventEmitter.listenerCount(this, 'stop');
-    if (this.state !== 'stop' && listenerCount === 0) {
-      this.once('stop', callback);
+    if (this.state !== 'stop') {
+      stopCallback = callback;
     } else if (this.state !== 'started') {
       var err = new Error('child not started');
-      this.emit('stop', err);
       callback(err);
     }
 
@@ -183,5 +190,4 @@ function BrowserStackTunnel(options) {
   };
 }
 
-util.inherits(BrowserStackTunnel, EventEmitter);
 module.exports = BrowserStackTunnel;

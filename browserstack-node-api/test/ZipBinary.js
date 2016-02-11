@@ -28,8 +28,6 @@ var ZIP_URL = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal
 var ZIP_URL_NO_ARCH = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-' + PLATFORM + '.zip';
 
 describe('ZipBinary', function () {
-  'use strict';
-
   var zipBinary;
 
   beforeEach(function () {

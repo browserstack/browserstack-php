@@ -2,6 +2,5 @@ ruby/dist/*
 node_modules/
 npm-debug.log
 browserstack-node-api/bin/
-browserstack-node-api/coverage/
 *.pyc
 python/env

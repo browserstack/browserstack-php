@@ -5,8 +5,6 @@ var path = require('path'),
   log = require('./helper').log;
 
 function ZipBinary(platform, arch, bin, ext) {
-  'use strict';
-
   var self = this;
   self.bin = bin || path.resolve(path.join(__dirname, '..', 'bin', arch ? path.join(platform, arch) : platform));
   self.path = path.resolve(path.join(self.bin, 'BrowserStackLocal' + (ext ? '.' + ext : '')));
