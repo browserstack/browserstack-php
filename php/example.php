@@ -1,13 +1,15 @@
 <?php
 // An example of using php-browserstacklocal
 
-namespace BrowserStack\BrowserStackLocal;
+namespace BrowserStack;
 
 use BrowserStack\BrowserStackLocal;
+use BrowserStack\BrowserStackLocalException;
 
 require_once('vendor/autoload.php');
 
-$me = new BrowserStackLocal('boring', '12345', 12345);
-
-
-$me->command();
+$me = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));
+$me->verbose();
+$me->enable_folder();
+$me->start();
+$me->stop();
