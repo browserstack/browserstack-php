@@ -1,13 +1,17 @@
 import subprocess
+from browserstack.local_binary import LocalBinary
 
 class BrowserStackLocalError(Exception):
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 class Local:
-    def __init__(self, key, binary_path):
+    def __init__(self, key, binary_path=None):
         self.key = key
-        self.binary_path = binary_path
+        if binary_path is None:
+            self.binary_path = LocalBinary().get_binary()
+        else:
+            self.binary_path = binary_path
         self.options = {}
         self.local_folder_path = None
 
@@ -21,6 +25,8 @@ class Local:
 
     def start(self):
         self.proc = subprocess.Popen(self._generate_args(), stdout=subprocess.PIPE)
+        self.stdout = self.proc.stdout
+        self.stderr = self.proc.stderr
         while True:
             line = self.proc.stdout.readline()
             if 'Error:' in line.strip():

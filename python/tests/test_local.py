@@ -3,7 +3,7 @@ from browserstack.local import Local, BrowserStackLocalError
 
 class TestLocal(unittest.TestCase):
     def setUp(self):
-        self.local = Local('sKUQixMHzMLvVtAqysUN', '/Users/sankha/browserstack/local/BrowserStackLocal')
+        self.local = Local('sKUQixMHzMLvVtAqysUN')
 
     def tearDown(self):
         self.local.stop()
