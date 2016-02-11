@@ -67,10 +67,16 @@ class Local:
         return self
 
     def proxy(self, host, port, username, password):
+        option_str = ''
         if host is not None:
-            self.options['proxy'] = "-proxyHost %s -proxyPort %s -proxyUser %s -proxyPass %s" % (host, str(port), username, password)
-        else:
-            self.options.pop('proxy', None)
+            option_str += " -proxyHost " + str(host)
+        if port is not None:
+            option_str += " -proxyPort " + str(port)
+        if username is not None:
+            option_str += " -proxyUser " + str(username)
+        if password is not None:
+            option_str += " -proxyPass " + str(password)
+        self.options['proxy'] = option_str.strip()
         return self
 
     def local_identifier(self, identifier):
