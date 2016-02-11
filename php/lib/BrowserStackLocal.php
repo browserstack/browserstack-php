@@ -87,6 +87,7 @@ class BrowserStackLocal {
 
   public function command() {
     return "./BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
+ 
   }
 
   private function is_windows(){
