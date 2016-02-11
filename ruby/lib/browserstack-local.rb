@@ -4,8 +4,13 @@ require 'rbconfig'
 class BrowserStackLocal
   attr_reader :pid
 
-  def initialize(key)
+  def initialize(key, binary_path = nil)
     @key = key
+    @binary_path = if binary_path.nil?
+        LocalBinary.new.download
+      else
+        binary_path
+      end
   end
 
   def enable_verbose
@@ -77,7 +82,7 @@ class BrowserStackLocal
   end
 
   def command
-    "BrowserStackLocal #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy} #{@force_flag} #{@verbose_flag} #{@hosts}".strip
+    "#{@binary_path} #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy} #{@force_flag} #{@verbose_flag} #{@hosts}".strip
   end
 end
 
@@ -89,6 +94,7 @@ class LocalBinary
     host_os = RbConfig::CONFIG['host_os']
     @http_path = case host_os
     when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+      @windows = true
       "https://s3.amazonaws.com/browserStack/browserstack-local/BrowserStackLocal.exe"
     when /darwin|mac os/
       "https://s3.amazonaws.com/browserStack/browserstack-local/BrowserStackLocal-darwin-x64"
@@ -107,8 +113,10 @@ class LocalBinary
       Dir.mkdir dest_parent_dir
     end
     res = Net::HTTP.get(URI(@http_path), :use_ssl => true)
-    open(File.join(dest_parent_dir, 'BrowserStackLocal')) do |file|
+    binary_path = File.join(dest_parent_dir, "BrowserStackLocal#{".exe" if @windows}")
+    open(binary_path) do |file|
       file.write(res.body)
     end
+    binary_path
   end
 end
