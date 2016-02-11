@@ -19,7 +19,7 @@ class LocalBinary:
         total_size = int(response.info().getheader('Content-Length').strip())
         bytes_so_far = 0
 
-        dest_parent_dir = os.path.expanduser('~') + '/.browserstack'
+        dest_parent_dir = os.path.join(os.path.expanduser('~'), 'browserstack')
         if not os.path.exists(dest_parent_dir):
             os.makedirs(dest_parent_dir)
 
@@ -46,7 +46,7 @@ class LocalBinary:
                 return final_path
 
     def get_binary(self):
-        dest_parent_dir = os.path.expanduser('~') + '/.browserstack'
+        dest_parent_dir = os.path.join(os.path.expanduser('~'), 'browserstack')
         bsfiles = [f for f in os.listdir(dest_parent_dir) if f.startswith('BrowserStackLocal')]
         if len(bsfiles) == 0:
             return self.download()
