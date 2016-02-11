@@ -158,14 +158,21 @@ function BrowserStackTunnel(options) {
   };
 
   this.startTunnel = function () {
+    var self = this;
     if (!fs.existsSync(binary.path)) {
-      log.warn('BrowserStackTunnel: binary not present');
-      var self = this;
+      log.warn('Binary not present');
       binary.update(function () {
         self._startTunnel();
       });
     } else {
-      this._startTunnel();
+      try {
+        this._startTunnel();
+      }catch(e) {
+        log.warn('The downloaded binary might be corrupt. Retrying download');
+        binary.update(function () {
+          self._startTunnel();
+        });
+      }
     }
   };
 
