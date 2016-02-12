@@ -9,7 +9,6 @@ namespace ConsoleApplication1
 {
   class Program
   {
-    BrowserStackTunnel tunnel = null;
     static void runOnConnected()
     {
       Console.WriteLine("Connected!!!");
@@ -19,11 +18,11 @@ namespace ConsoleApplication1
       var myInst = new BrowserStackTunnel("sUiJatw6NhJZpsttcY35", runOnConnected);
       myInst.addArgs("localIdentifier", "wer");
       myInst.addArgs("qweqwe", "wer");
+      myInst.verboseMode();
       myInst.addArgs("onlyAutomate", "true");
       myInst.addArgs("forcelocal", true);
       myInst.addArgs("hosts", "localhost,3000,0");
       myInst.addArgs("verbose", true);
-      myInst.logBinaryOutput();
       myInst.start("C:\\Users\\Admin\\Desktop\\");
       Console.ReadLine();
       myInst.stop();

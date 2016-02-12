@@ -6,8 +6,8 @@ namespace BrowserStackApi
 {
   public class BrowserStackTunnel
   {
-    private bool binaryOutput = false;
     private string accessKey = "";
+    private bool logVerbose = false;
     private string argumentString = "";
     private BrowserStackLocal local = null;
     private static KeyValuePair<string, string> emptyStringPair = new KeyValuePair<string, string>();
@@ -91,14 +91,18 @@ namespace BrowserStackApi
       }
     }
 
-    public void logBinaryOutput()
+    public void verboseMode()
     {
-      this.binaryOutput = true;
+      this.logVerbose = true;
     }
 
     public void start()
     {
       this.local = new BrowserStackLocal(accessKey + " " + argumentString);
+      if(this.logVerbose)
+      {
+        this.local.logVerbose();
+      }
       this.local.Run(callOnStateChange);
     }
 
@@ -110,7 +114,7 @@ namespace BrowserStackApi
 
     public void stop()
     {
-      if (this.local != null) { 
+      if (this.local != null) {
         this.local.Kill();
       }
     }

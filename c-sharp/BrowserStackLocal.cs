@@ -18,6 +18,7 @@ namespace BrowserStackApi
     static string binaryName = "BrowserStackLocal.exe";
     static string downloadURL = "https://www.browserstack.com/browserstack-local/BrowserStackLocal-win32.zip";
 
+    bool verbose = false;
     string basePath = "";
     string zipAbsolute = "";
     string binaryAbsolute = "";
@@ -62,6 +63,11 @@ namespace BrowserStackApi
       this.binaryArguments = binaryArguments;
     }
 
+    public void logVerbose()
+    {
+      this.verbose = true;
+    }
+
     public void downloadBinary()
     {
       Directory.CreateDirectory(this.basePath);
@@ -101,7 +107,10 @@ namespace BrowserStackApi
       if (lastPid > 0)
         KillByPid(lastPid);
 
-      Console.WriteLine("Local Started with Arguments -- " + binaryArguments);
+      if(this.verbose == true)
+      {
+        Console.WriteLine("Local Started with Arguments -- " + binaryArguments);
+      }
       ProcessStartInfo processStartInfo = new ProcessStartInfo()
       {
         FileName = binaryAbsolute,
@@ -122,7 +131,10 @@ namespace BrowserStackApi
         if (e.Data != null)
         {
           output.Append(e.Data);
-          //Console.WriteLine("out: " + e.Data);
+          if(this.verbose == true)
+          {
+            Console.WriteLine("BinaryOutput: " + e.Data);
+          }
 
           foreach (KeyValuePair<LocalState, Regex> kv in stateMatchers)
           {
@@ -137,7 +149,10 @@ namespace BrowserStackApi
 
               localState = kv.Key;
               output.Clear();
-              Console.WriteLine("TunnelState: " + localState.ToString());
+              if(this.verbose == true)
+              {
+                Console.WriteLine("TunnelState: " + localState.ToString());
+              }
               break;
             }
           }
@@ -257,7 +272,7 @@ namespace BrowserStackApi
           p.Kill();
         }
       }
-      catch (Exception e)
+      catch (Exception)
       {
       }
     }
