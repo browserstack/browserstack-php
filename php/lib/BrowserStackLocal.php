@@ -13,6 +13,8 @@ class BrowserStackLocal {
 
 	public function __construct($key) {
     $this->key = $key;
+    if (is_executable("BrowserStack/BrowserStackLocal"))
+      $this->prepare_binary();
   }
 
 	public function __destruct() {
@@ -86,8 +88,25 @@ class BrowserStackLocal {
     }
   }
 
+
+  public function prepare_binary($url) {
+    mkdir('BrowserStack', 0777, true);
+    $url = "https://www.browserstack.com/browserstack-local/BrowserStackLocal-darwin-x64.zip";
+    file_put_contents("BrowserStack/BrowserStack.zip", fopen($url, 'r'));
+
+    $zip = new \ZipArchive;
+    if ($zip->open('BrowserStack/BrowserStack.zip') === TRUE) {
+      $zip->extractTo("BrowserStack/");
+      $zip->close();
+    } else {
+      
+    }
+    chmod("BrowserStack/BrowserStackLocal", 0777);
+
+  }
+
   public function command() {
-    return "./BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
+    return "./BrowserStack/BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
   }
 
   private function is_windows(){
@@ -96,6 +115,5 @@ class BrowserStackLocal {
     }
     return false;
   }
-
 }
 
