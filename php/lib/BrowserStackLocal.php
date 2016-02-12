@@ -9,17 +9,10 @@ error_reporting(1);
 class BrowserStackLocal {
 
   private $handle = NULL;
-  
+  private $pipes = array();
+
 	public function __construct($key) {
     $this->key = $key;
-    // $this->verbose_flag = NULL;
-    //$this->folder_flag = "-f";
-    // $this->folder_path = NULL;
-    // $this->force_flag = NULL;
-    // $this->only_flag = ;
-    // $this->only_automate_flag = "";
-    // $this->force_local_flag = "";
-    // $this->local_identifier_flag = "";
   }
 
 	public function __destruct() {
@@ -56,40 +49,41 @@ class BrowserStackLocal {
   }
 
   public function start() {
-    $call = $this->command();    
-    if ($this->is_windows()) {
+
+    $descriptorspec = array(
+      0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
+      1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
+      2 => array("file", "/tmp/error-output.txt", "a") // stderr is a file to write to
+    );
+    
+    $call = $this->command();
+
+    if ($this->is_windows()) 
        $this->handle = popen("start /b .$call.", "r");
-    }
-    else {
-      #$this->handle = popen("$call > /dev/null 2>&1 &", "r");
-      $this->handle = popen("$call &", "r");
-    }  
-    while(!feof($this->handle)) {
-        
-        $buffer = fgets($this->handle);
+    else     
+      $this->handle = proc_open($call, $descriptorspec,$this->pipes);
+    
+    
+    while(!feof($this->pipes[1])) {
+        $buffer = fgets($this->pipes[1]);
         if (preg_match("/\bError\b/i", $buffer,$match)) {
           throw new BrowserStackLocalException($buffer);
-          pclose($this->handle);
+          proc_terminate($this->handle);
           return;
         }
         elseif (strcmp(rtrim($buffer),"Press Ctrl-C to exit") == 0)
           return;
-
         flush();    
     }
+
   }
 
   public function stop() {
     if (is_null($this->handle))
       return;
     else {
-      $process_status = proc_get_status($this->handle);
-      $pid = $process_status["pid"];
-      pclose($this->handle);
-      posix_kill($pid, SIGKILL);
-      
+      proc_terminate($this->handle);
     }
-
   }
 
   public function command() {
@@ -102,5 +96,6 @@ class BrowserStackLocal {
     }
     return false;
   }
+
 }
 
