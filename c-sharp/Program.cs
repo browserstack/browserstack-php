@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BrowserStackApi;
+
+namespace ConsoleApplication1
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      var myInst = new BrowserStackTunnel("sUiJatw6NhJZpsttcY35");
+      myInst.addArgs("localIdentifier", "wer");
+      myInst.addArgs("qweqwe", "wer");
+      myInst.addArgs("onlyAutomate", "true");
+      myInst.addArgs("hosts", "localhost,3000,0");
+      myInst.start();
+      Console.ReadLine();
+      myInst.stop();
+      Console.ReadLine();
+    }
+  }
+}
