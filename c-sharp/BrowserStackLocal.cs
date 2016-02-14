@@ -31,6 +31,7 @@ namespace BrowserStackApi
 
     List<Process> processes = new List<Process>();
     List<Job> jobs = new List<Job>();
+    private Action<LocalState> callbackFunction = null;
 
     private static Dictionary<LocalState, Regex> stateMatchers = new Dictionary<LocalState, Regex>() {
       { LocalState.Connected, new Regex(@"Press Ctrl-C to exit.*", RegexOptions.Multiline) },
@@ -88,8 +89,9 @@ namespace BrowserStackApi
       }
     }
 
-    public void Run()
+    public void Run(Action<LocalState> callOnStateChange)
     {
+      this.callbackFunction = callOnStateChange;
       if (!File.Exists(binaryAbsolute))
       {
         Console.WriteLine("BrowserStackLocal binary was not found.");
@@ -185,6 +187,10 @@ namespace BrowserStackApi
 
     private void TunnelStateChanged(LocalState prevState, LocalState state)
     {
+      if(this.callbackFunction != null)
+      {
+        this.callbackFunction(state);
+      }
     }
 
     public bool IsConnected()

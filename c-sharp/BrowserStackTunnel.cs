@@ -12,6 +12,8 @@ namespace BrowserStackApi
     private BrowserStackLocal local = null;
     private static KeyValuePair<string, string> emptyStringPair = new KeyValuePair<string, string>();
 
+    private Action callOnConnected = null;
+
     private static List<KeyValuePair<string, string>> valueCommands = new List<KeyValuePair<string, string>>() {
       new KeyValuePair<string, string>("localidentifier", "-localIdentifier"),
       new KeyValuePair<string, string>("hosts", ""),
@@ -26,13 +28,24 @@ namespace BrowserStackApi
       new KeyValuePair<string, string>("forcelocal", "-forcelocal"),
       new KeyValuePair<string, string>("onlyautomate", "-onlyAutomate"),
     };
-
-    public BrowserStackTunnel() : this(Environment.GetEnvironmentVariable("BROWSERSTACK_ACCESS_KEY"))
+    private void callOnStateChange(LocalState state)
     {
+      Console.WriteLine("Current State " + state);
+      if(state == LocalState.Connected && callOnConnected != null)
+      {
+        callOnConnected();
+      }
     }
 
-    public BrowserStackTunnel(string BrowserStackKey)
+    public BrowserStackTunnel() : this(Environment.GetEnvironmentVariable("BROWSERSTACK_ACCESS_KEY"), null) { }
+    public BrowserStackTunnel(Action callOnConnected) : this(
+      Environment.GetEnvironmentVariable("BROWSERSTACK_ACCESS_KEY"), callOnConnected) { }
+    public BrowserStackTunnel(string BrowserStackKey) : this(BrowserStackKey, null) { }
+
+    public BrowserStackTunnel(string BrowserStackKey, Action callOnConnected)
     {
+      this.callOnConnected = callOnConnected;
+
       if (BrowserStackKey == null || BrowserStackKey.Trim() == "")
       {
         Console.WriteLine("Browserstack Access Key cannot be empty");
@@ -86,13 +99,13 @@ namespace BrowserStackApi
     public void start()
     {
       this.local = new BrowserStackLocal(accessKey + " " + argumentString);
-      this.local.Run();
+      this.local.Run(callOnStateChange);
     }
 
     public void start(string binaryPath)
     {
       this.local = new BrowserStackLocal(binaryPath, accessKey + " " + argumentString);
-      this.local.Run();
+      this.local.Run(callOnStateChange);
     }
 
     public void stop()
