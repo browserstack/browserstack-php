@@ -13,7 +13,8 @@ class BrowserStackLocal {
 
 	public function __construct($key) {
     $this->key = $key;
-    if (is_executable("BrowserStack/BrowserStackLocal"))
+    
+    if (!is_executable("BrowserStack/BrowserStackLocal"))
       $this->prepare_binary();
   }
 
@@ -59,13 +60,9 @@ class BrowserStackLocal {
     );
     
     $call = $this->command();
-
-    if ($this->is_windows()) 
-       $this->handle = popen("start /b .$call.", "r");
-    else     
-      $this->handle = proc_open($call, $descriptorspec,$this->pipes);
     
-    
+    $this->handle = proc_open($call, $descriptorspec,$this->pipes);
+  
     while(!feof($this->pipes[1])) {
         $buffer = fgets($this->pipes[1]);
         if (preg_match("/\bError\b/i", $buffer,$match)) {
@@ -84,14 +81,30 @@ class BrowserStackLocal {
     if (is_null($this->handle))
       return;
     else {
+      echo "hello";
       proc_terminate($this->handle);
     }
   }
 
+private function platform_url()
+{
+  if (PHP_OS == "Darwin")
+    return "https://www.browserstack.com/browserstack-local/BrowserStackLocal-darwin-x64.zip";
+  else if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+    return "https://www.browserstack.com/browserstack-local/BrowserStackLocal-win32.zip";
+  if ((strtoupper(PHP_OS)) == "LINUX") {
+    if (PHP_INT_SIZE * 8 == 64)
+      return "https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip";
+    else
+      return "https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-ia32.zip";
+  }
+}
 
   public function prepare_binary($url) {
+    $url = $this->platform_url();
+    
     mkdir('BrowserStack', 0777, true);
-    $url = "https://www.browserstack.com/browserstack-local/BrowserStackLocal-darwin-x64.zip";
+    
     file_put_contents("BrowserStack/BrowserStack.zip", fopen($url, 'r'));
 
     $zip = new \ZipArchive;
@@ -102,11 +115,12 @@ class BrowserStackLocal {
       
     }
     chmod("BrowserStack/BrowserStackLocal", 0777);
-
   }
 
   public function command() {
-    return "./BrowserStack/BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
+    $command = "./BrowserStack/BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
+    preg_replace('/\s+/S', " ", $command);
+    return $command;
   }
 
   private function is_windows(){
