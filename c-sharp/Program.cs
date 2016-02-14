@@ -15,8 +15,10 @@ namespace ConsoleApplication1
       myInst.addArgs("localIdentifier", "wer");
       myInst.addArgs("qweqwe", "wer");
       myInst.addArgs("onlyAutomate", "true");
+      myInst.addArgs("forcelocal", true);
       myInst.addArgs("hosts", "localhost,3000,0");
-      myInst.start();
+      myInst.addArgs("verbose", true);
+      myInst.start("C:\\Users\\Admin\\Desktop\\");
       Console.ReadLine();
       myInst.stop();
       Console.ReadLine();

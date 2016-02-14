@@ -63,27 +63,26 @@ namespace BrowserStackApi
 
     public void downloadBinary()
     {
-      Directory.CreateDirectory(basePath);
+      Directory.CreateDirectory(this.basePath);
 
       using (var client = new WebClient())
       {
         Console.WriteLine("Downloading BrowserStackLocal Zip..");
-        client.DownloadFile(downloadURL, zipAbsolute);
-
+        client.DownloadFile(downloadURL, this.zipAbsolute);
         Console.WriteLine("Opening Zip..");
-        ZipStorer zip = ZipStorer.Open(zipAbsolute, FileAccess.Read);
+        ZipStorer zip = ZipStorer.Open(this.zipAbsolute, FileAccess.Read);
         List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
         foreach (ZipStorer.ZipFileEntry entry in dir)
         {
           if (Path.GetFileName(entry.FilenameInZip) == binaryName)
           {
-            zip.ExtractFile(entry, binaryAbsolute);
+            zip.ExtractFile(entry, this.binaryAbsolute);
             break;
           }
         }
         zip.Close();
 
-        File.Delete(zipAbsolute);
+        File.Delete(this.zipAbsolute);
 
         Console.WriteLine("Binary Extracted");
       }

@@ -6,12 +6,13 @@ namespace BrowserStackApi
 {
   public class BrowserStackTunnel
   {
-    string accessKey = "";
-    string argumentString = "";
-    BrowserStackLocal local = null;
-    KeyValuePair<string, string> emptyStringPair = new KeyValuePair<string, string>();
+    private bool binaryOutput = false;
+    private string accessKey = "";
+    private string argumentString = "";
+    private BrowserStackLocal local = null;
+    private static KeyValuePair<string, string> emptyStringPair = new KeyValuePair<string, string>();
 
-    List<KeyValuePair<string, string>> valueCommands = new List<KeyValuePair<string, string>>() {
+    private static List<KeyValuePair<string, string>> valueCommands = new List<KeyValuePair<string, string>>() {
       new KeyValuePair<string, string>("localidentifier", "-localIdentifier"),
       new KeyValuePair<string, string>("hosts", ""),
       new KeyValuePair<string, string>("proxyhost", "-proxyHost"),
@@ -20,8 +21,9 @@ namespace BrowserStackApi
       new KeyValuePair<string, string>("proxypass", "-proxyPass"),
     };
 
-    List<KeyValuePair<string, string>> booleanCommands = new List<KeyValuePair<string, string>>() {
+    private static List<KeyValuePair<string, string>> booleanCommands = new List<KeyValuePair<string, string>>() {
       new KeyValuePair<string, string>("verbose", "-v"),
+      new KeyValuePair<string, string>("forcelocal", "-forcelocal"),
       new KeyValuePair<string, string>("onlyautomate", "-onlyAutomate"),
     };
 
@@ -38,7 +40,7 @@ namespace BrowserStackApi
       }
       Regex.Replace(BrowserStackKey, @"\s+", "");
 
-      accessKey = BrowserStackKey;
+      this.accessKey = BrowserStackKey;
     }
 
     public void addArgs(string key, string value)
@@ -49,28 +51,54 @@ namespace BrowserStackApi
       result = valueCommands.Find(pair => pair.Key == key);
       if (!result.Equals(emptyStringPair))
       {
-        argumentString += result.Value + " " + value.Trim().ToLower() + " ";
+        this.argumentString += result.Value + " " + value.Trim().ToLower() + " ";
       }
       result = booleanCommands.Find(pair => pair.Key == key);
       if (!result.Equals(emptyStringPair))
       {
         if (value.Trim().ToLower() == "true")
         {
-          argumentString += result.Value;
+          this.argumentString += result.Value + " ";
         }
       }
+    }
+
+    public void addArgs(string key, bool value)
+    {
+      KeyValuePair<string, string> result;
+      key = key.Trim().ToLower();
+
+      result = booleanCommands.Find(pair => pair.Key == key);
+      if (!result.Equals(emptyStringPair))
+      {
+        if (value == true)
+        {
+          this.argumentString += result.Value + " ";
+        }
+      }
+    }
+
+    public void logBinaryOutput()
+    {
+      this.binaryOutput = true;
     }
 
     public void start()
     {
       this.local = new BrowserStackLocal(accessKey + " " + argumentString);
-      local.Run();
+      this.local.Run();
+    }
+
+    public void start(string binaryPath)
+    {
+      this.local = new BrowserStackLocal(binaryPath, accessKey + " " + argumentString);
+      this.local.Run();
     }
 
     public void stop()
     {
-      if (local != null) { 
-        local.Kill();
+      if (this.local != null) { 
+        this.local.Kill();
       }
     }
   }
