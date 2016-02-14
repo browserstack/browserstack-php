@@ -99,7 +99,7 @@ namespace BrowserStackApi
     public void start()
     {
       this.local = new BrowserStackLocal(accessKey + " " + argumentString);
-      if(this.logVerbose)
+      if(this.logVerbose == true)
       {
         this.local.logVerbose();
       }
@@ -109,6 +109,10 @@ namespace BrowserStackApi
     public void start(string binaryPath)
     {
       this.local = new BrowserStackLocal(binaryPath, accessKey + " " + argumentString);
+      if (this.logVerbose == true)
+      {
+        this.local.logVerbose();
+      }
       this.local.Run(callOnStateChange);
     }
 
