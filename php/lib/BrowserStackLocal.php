@@ -119,7 +119,7 @@ private function platform_url()
 
   public function command() {
     $command = "./BrowserStack/BrowserStackLocal $this->folder_flag $this->key $this->folder_path $this->force_local_flag $this->local_identifier_flag $this->only_flag $this->only_automate_flag $this->force_flag $this->verbose_flag";
-    preg_replace('/\s+/S', " ", $command);
+    $command = preg_replace('/\s+/S', " ", $command);
     return $command;
   }
 
