@@ -4,7 +4,7 @@ require 'browserstack-local'
 
 class BrowserStackLocalTest < Minitest::Test
   def setup
-    @bs_local = BrowserStackLocal.new(ENV["BROWSERSTACK_KEY"])
+    @bs_local = BrowserStackLocal.new(ENV["BROWSERSTACK_KEY"], ENV["BROWSERSTACK_BINARY_PATH"])
   end
 
   def test_check_pid
@@ -14,7 +14,7 @@ class BrowserStackLocalTest < Minitest::Test
 
   def test_multiple_binary
     @bs_local.start
-    bs_local_2 = BrowserStackLocal.new(ENV["BROWSERSTACK_KEY"])
+    bs_local_2 = BrowserStackLocal.new(ENV["BROWSERSTACK_KEY"], ENV["BROWSERSTACK_BINARY_PATH"])
     assert_raises BrowserStackLocalException do 
       bs_local_2.start
     end

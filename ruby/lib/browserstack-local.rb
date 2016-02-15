@@ -32,7 +32,7 @@ class BrowserStackLocal
     elsif key == "proxyHost"
       @proxy_host = "-proxyHost '#{value}'"
     elsif key == "proxyPort"
-      @proxy_port = "-proxyPort '#{value}'"
+      @proxy_port = "-proxyPort #{value}"
     elsif key == "proxyUser"
       @proxy_user = "-proxyUser '#{value}'"
     elsif key == "proxyPass"
@@ -74,7 +74,7 @@ class BrowserStackLocal
   end
 
   def command
-    "#{@binary_path} #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy_host} #{proxy_port} #{proxy_user} #{proxy_pass} #{@force_flag} #{@verbose_flag} #{@hosts}".strip
+    "#{@binary_path} #{@folder_flag} #{@key} #{@folder_path} #{@force_local_flag} #{@local_identifier_flag} #{@only_flag} #{@only_automate_flag} #{@proxy_host} #{@proxy_port} #{@proxy_user} #{@proxy_pass} #{@force_flag} #{@verbose_flag} #{@hosts}".strip
   end
 end
 
@@ -104,7 +104,7 @@ class LocalBinary
     unless File.exists? dest_parent_dir
       Dir.mkdir dest_parent_dir
     end
-    res = Net::HTTP.get(URI(@http_path), :use_ssl => true)
+    res = Net::HTTP.get(@http_path, :use_ssl => true)
     binary_path = File.join(dest_parent_dir, "BrowserStackLocal#{".exe" if @windows}")
     open(binary_path) do |file|
       file.write(res.body)
