@@ -1,3 +1,6 @@
 ruby/dist/*
+node_modules/
+npm-debug.log
+browserstack-node-api/bin/
 *.pyc
 python/env
