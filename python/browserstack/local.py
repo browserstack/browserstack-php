@@ -1,13 +1,17 @@
 import subprocess
+from browserstack.local_binary import LocalBinary
 
 class BrowserStackLocalError(Exception):
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 class Local:
-    def __init__(self, key, binary_path):
+    def __init__(self, key, binary_path=None):
         self.key = key
-        self.binary_path = binary_path
+        if binary_path is None:
+            self.binary_path = LocalBinary().get_binary()
+        else:
+            self.binary_path = binary_path
         self.options = {}
         self.local_folder_path = None
 
@@ -21,6 +25,8 @@ class Local:
 
     def start(self):
         self.proc = subprocess.Popen(self._generate_args(), stdout=subprocess.PIPE)
+        self.stdout = self.proc.stdout
+        self.stderr = self.proc.stderr
         while True:
             line = self.proc.stdout.readline()
             if 'Error:' in line.strip():
@@ -61,10 +67,16 @@ class Local:
         return self
 
     def proxy(self, host, port, username, password):
+        option_str = ''
         if host is not None:
-            self.options['proxy'] = "-proxyHost %s -proxyPort %s -proxyUser %s -proxyPass %s" % (host, str(port), username, password)
-        else:
-            self.options.pop('proxy', None)
+            option_str += " -proxyHost " + str(host)
+        if port is not None:
+            option_str += " -proxyPort " + str(port)
+        if username is not None:
+            option_str += " -proxyUser " + str(username)
+        if password is not None:
+            option_str += " -proxyPass " + str(password)
+        self.options['proxy'] = option_str.strip()
         return self
 
     def local_identifier(self, identifier):
