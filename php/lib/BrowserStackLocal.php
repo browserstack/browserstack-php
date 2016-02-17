@@ -11,9 +11,8 @@ class BrowserStackLocal {
   private $handle = NULL;
   private $pipes = array();
 
-	public function __construct($key) {
-    $this->key = $key;
-    
+	public function __construct() {
+    $this->key = getenv("BROWSERSTACK_KEY");
     if (!is_executable("BrowserStack/BrowserStackLocal"))
       $this->prepare_binary();
   }
@@ -21,9 +20,22 @@ class BrowserStackLocal {
 	public function __destruct() {
         echo "";
   }
+
+  public function is_running() {
+    $host = 'localhost';
+    $port = '45691';
+
+    $connection = fsockopen($host, $port);
+    if (is_resource($connection))
+      return True;
+    else
+      return False;
+  }
   
   public function add_args($arg_key, $value = NULL) {
-    if ($arg_key == "v")
+    if ($arg_key == "access_key")
+      $this->key = $value;
+    elseif ($arg_key == "v")
       $this->verbose_flag = "-v";
     elseif ($arg_key == "force")
       $this->force_flag = "-force";
@@ -51,7 +63,10 @@ class BrowserStackLocal {
     }
   }
  	
-  public function start() {
+  public function start($arguments) {
+    foreach($arguments as $key => $value)
+      $this->add_args($key,$value);
+
     $descriptorspec = array(
       0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
       1 => array("pipe", "w"),  // stdout is a pipe that the child will write to

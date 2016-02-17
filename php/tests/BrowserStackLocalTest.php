@@ -13,24 +13,8 @@ class BrowserStackLocalTest extends \PHPUnit_Framework_TestCase {
   private $bs_local;
   
   public function setUp(){
-    $this->bs_local = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));
+    $this->bs_local = new BrowserStackLocal();
   }
-  
-  public function test_multiple_binary() {
-    $this->bs_local->start();
-    $bs_local_2 = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));  
-    try {
-      $bs_local_2->start();
-    } catch (BrowserStackLocalException $ex) {
-        $emessage = $ex->getMessage();
-        $this->assertEquals(trim($emessage), '*** Error: Either another browserstack local client is running on your machine or some server is listening on port 45691');
-        $this->bs_local->stop();
-        return;
-      }
-    $this->fail("Expected Exception has not been raised.");
-    $this->bs_local->stop();
-  }
-
   
   public function test_verbose() {
     $this->bs_local->add_args('v');
@@ -80,4 +64,30 @@ class BrowserStackLocalTest extends \PHPUnit_Framework_TestCase {
     $this->assertContains('localhost,8080,0',$this->bs_local->command());
   }
 
+  public function test_multiple_binary() {
+    $this->bs_local->start();
+    $bs_local_2 = new BrowserStackLocal(getenv("BROWSERSTACK_KEY"));  
+    try {
+      $bs_local_2->start();
+    } catch (BrowserStackLocalException $ex) {
+        $emessage = $ex->getMessage();
+        $this->assertEquals(trim($emessage), '*** Error: Either another browserstack local client is running on your machine or some server is listening on port 45691');
+        $bs_local_2->stop();
+        $this->bs_local->stop();
+        sleep(2);
+        return;
+      }
+    $this->fail("Expected Exception has not been raised.");
+    $this->bs_local->stop();
+    sleep(2);
+  }
+
+  public function test_is_running() {
+    $this->assertFalse($this->bs_local->is_running());
+    $this->bs_local->start();
+    $this->assertTrue($this->bs_local->is_running());
+    $this->bs_local->stop();
+    sleep(2);
+    $this->assertFalse($this->bs_local->is_running());
+  }
 }
