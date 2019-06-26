@@ -40,3 +40,7 @@ class TestLocal(unittest.TestCase):
     def test_local_identifier(self):
         self.local.local_identifier('mytunnel')
         self.assertTrue('-localIdentifier mytunnel' in self.local._generate_args())
+
+
+if __name__ == '__main__':
+    unittest.main()
