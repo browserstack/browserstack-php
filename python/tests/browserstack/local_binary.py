@@ -9,10 +9,13 @@ class LocalBinary:
     def __init__(self):
         is_64bits = sys.maxsize > 2**32
         osname = platform.system().lower()
-        if osname in ['darwin', 'linux']:
-            self.http_path = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-%s-%s.zip' % (osname, 'x64' if is_64bits else 'ia32')
+        self.http_path = 'https://www.browserstack.com/browserstack-local/BrowserStackLocal-'
+        if 'darwin' in osname:
+            self.http_path += 'darwin-x64.zip'
+        elif 'linux' in osname:
+            self.http_path += 'linux-%s.zip' % ('x64' if is_64bits else 'ia32')
         else:
-            self.http_path = "https://www.browserstack.com/browserstack-local/BrowserStackLocal-win32.zip"
+            self.http_path += 'win32.zip'
         self.dest_parent_dir = os.path.join(os.path.expanduser('~'), 'browserstack')
         self.dest_file_path = os.path.join(self.dest_parent_dir, 'download.zip')
 
