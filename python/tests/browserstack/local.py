@@ -29,12 +29,11 @@ class Local:
         self.stderr = self.proc.stderr
         while True:
             line = self.proc.stdout.readline()
-            if 'Error:' in line.decode().strip():
+            line = line.decode().strip()
+            if 'Error:' in line:
                 raise BrowserStackLocalError(line)
-            elif line.decode().strip() == 'Press Ctrl-C to exit':
+            elif line == 'Press Ctrl-C to exit':
                 break
-        self.proc.kill()
-        self.proc.wait()
 
 
     def verbose(self, enable=True):
