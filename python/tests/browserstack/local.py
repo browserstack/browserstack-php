@@ -18,9 +18,9 @@ class Local:
     def _generate_args(self):
         optional_args = self.options.values()
         if self.local_folder_path is not None:
-            final_args = [self.binary_path] + self.options.values() + ['-f', self.key, self.local_folder_path]
+            final_args = [self.binary_path] + list(self.options.values()) + ['-f', self.key, self.local_folder_path]
         else:
-            final_args = [self.binary_path] + self.options.values() + [self.key]
+            final_args = [self.binary_path] + list(self.options.values()) + [self.key]
         return final_args
 
     def start(self):
@@ -29,10 +29,12 @@ class Local:
         self.stderr = self.proc.stderr
         while True:
             line = self.proc.stdout.readline()
-            if 'Error:' in line.strip():
+            line = line.decode().strip()
+            if 'Error:' in line:
                 raise BrowserStackLocalError(line)
-            elif line.strip() == 'Press Ctrl-C to exit':
+            elif line == 'Press Ctrl-C to exit':
                 break
+
 
     def verbose(self, enable=True):
         if enable == True:
